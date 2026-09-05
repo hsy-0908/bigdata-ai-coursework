@@ -91,3 +91,17 @@ Agent、大模型上下文窗口、Skill 三份 html
 2. 对三份生成HTML学习资料人工校验：确认5个章节完整；逐个打开参考链接，确保链接真实可访问；修正AI生成的部分表述，补充个人理解解释，区分官方定义和个人解读。
 3. 核对concept‑relationship.md，确认讲清Agent、大模型上下文、Skill三者关系，重点确认上下文如何影响Agent运行、Skill如何沉淀复用任务知识。
 4. Git提交前检查仓库，确认没有上传密钥、隐私信息，使用.gitignore排除敏感文件。
+# AI概念学习资料仓库
+作业1：用AI构建个人概念学习资料生成Skill
+
+## 仓库文件结构
+- workbuddy/skill.md：项目级Skill定义文件
+- learning‑materials/：三份HTML概念学习资料
+  - agent.html：Agent概念学习页面
+  - llm‑context.html：LLM上下文概念学习页面
+  - skill.html：Skill概念学习页面
+- concept‑relationship.md：Agent、LLM上下文、Skill三者概念关系说明
+- README.md：项目说明文档
+
+## 项目说明
+本仓库使用Skill生成三份AI概念学习网页，每份学习资料包含个人解释、机制、应用场景、学习目标、核心问题、自测问题。
