@@ -49,113 +49,22 @@ footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-si
 </head>
 <body>
 <div class="wrap">
+<h1>大模型的上下文</h1>
 
-<header>
-  <div class="kicker">CONCEPT CARD · 大模型基础</div>
-  <h1>上下文窗口（Context Window）</h1>
-  <p class="tagline">模型一次推理时，能同时"看见"的全部内容的上限。它更接近工作台面，而不是硬盘。</p>
-</header>
+<h2>个人解释</h2>
+<p>上下文就是大模型一次对话能够记住的全部内容，包含历史提问、历史回答、提示指令。相当于模型的短期记忆。上下文窗口大小，决定模型能读取多少文字；超出窗口，模型就会遗忘前面的内容。</p >
 
-<div class="def">
-上下文窗口是模型在<b>单次请求—响应</b>中能处理的 token 总量上限。你的系统提示、对话历史、粘贴的文档、当前问题，以及模型自己的回答，<b>全部共享这同一份预算</b>。
-</div>
+<h2>核心机制或组成</h2>
+<p>上下文由token序列构成，用户输入、历史对话、系统提示全部会转为token送入模型。上下文窗口上限就是模型一次能够处理token最大数量。当内容超过窗口长度，需要做截断、摘要压缩，舍弃较早的对话内容，保证输入不超限。系统提示、用户问题、模型回复共同构成完整上下文。</p >
 
-<div class="analogy" style="margin-top:14px;">
-类比：一张固定大小的工作台。台面上摆不下，就得把东西拿走，或者只把用得上的零件拿上来。台面变大不会让人更聪明，只是少跑几趟。
-</div>
+<h2>具体应用场景</h2>
+<p>长文档分析：把几十页产品文档输入大模型，依靠较大上下文窗口，让模型通读全部文档，基于全文内容回答问题、提取要点、查找bug。如果上下文窗口很小，就无法一次性读取完整文档。</p >
 
-<h2>台面上都摆了什么</h2>
-<div class="card">
-<div class="bar">
-  <div class="seg" style="width:5%;background:#85B7EB;"></div>
-  <div class="seg" style="width:20%;background:#378ADD;"></div>
-  <div class="seg" style="width:40%;background:#185FA5;"></div>
-  <div class="seg" style="width:5%;background:#042C53;"></div>
-  <div class="seg" style="width:30%;background:#1D9E75;"></div>
-</div>
-<div class="legend">
-  <span><i class="dot" style="background:#85B7EB"></i>系统提示词 5%</span>
-  <span><i class="dot" style="background:#378ADD"></i>对话历史 20%</span>
-  <span><i class="dot" style="background:#185FA5"></i>检索资料 40%</span>
-  <span><i class="dot" style="background:#042C53"></i>当前问题 5%</span>
-  <span><i class="dot" style="background:#1D9E75"></i>回答预留 30%</span>
-</div>
-<p style="margin-top:14px;font-size:14px;color:var(--muted);">前四项相加 = 你付的输入成本；最后一项 = 留给思考和输出的空间。多塞文档，就是从这个预算里抢。</p>
-</div>
+<h2>容易混淆的问题或使用边界</h2>
+<p>需要区分上下文窗口≠知识库。上下文只是临时短期记忆，对话结束就失效，不会永久存储知识。即便窗口足够大，模型对超长文本深处细节依然会遗忘；上下文越大，推理消耗资源越高，速度变慢，成本上升，不能无限制塞文本。</p >
 
-<h2>为什么它会满</h2>
-<p>模型没有跨轮次的"记忆"。每一轮对话，你都在把上文<b>整包重发一遍</b>。所以 token 消耗只增不减，长对话必然撞顶。撞顶后只有三条路：</p>
-<div class="card">
-<table>
-<tr><th>做法</th><th>代价</th></tr>
-<tr><td><b>截断最早内容</b></td><td>丢掉开场立下的规则和约定</td></tr>
-<tr><td><b>把历史压成摘要</b></td><td>省空间，但细节不可逆地丢失</td></tr>
-<tr><td><b>只取相关片段（检索）</b></td><td>最省，但需要预先建索引</td></tr>
-</table>
-<p style="margin:10px 0 0;font-size:14px;color:var(--muted);">三者本质相同：减少真正进入窗口的 token。区别只在于由谁决定丢什么，以及丢掉的还找不找得回来。</p>
-</div>
-
-<h2>三个反直觉的事实</h2>
-
-<div class="fact">
-<b>1. 标称值 ≠ 可用值</b>
-厂商宣传的 "1M" 是能塞进去的上限，不是能可靠用出来的上限。长输入里模型对<b>中间位置</b>的信息召回明显偏弱（lost-in-the-middle），开头和结尾最可靠。
-</div>
-
-<div class="fact">
-<b>2. 更大的窗口不会让模型更聪明</b>
-窗口只是容量指标，不是能力指标。塞满窗口往往比精准投喂 20K 的效果更差，而且贵得多。
-</div>
-
-<div class="fact">
-<b>3. 成本随长度非线性上升</b>
-你按每一个送进去的 token 付费；部分厂商对超过阈值（常见是 20 万 token）的请求加收长上下文费用，单价可能翻倍。RAG 管道很容易悄悄把每次请求推过这个档位。
-</div>
-
-<div class="warn">
-截至 2026 年中，主流前沿模型的窗口集中在 1M token 量级（Gemini 2.5 Pro 1,048,576；GPT-5.5、Claude Opus 5、DeepSeek V4 均为 1M；GPT-5 为 400K；GPT-4o 仍为 128K）。网上流传的 10M 窗口多为未经验证的宣传口径，请以厂商 API 文档为准。具体数字变动很快，用到时再核对官网。
-</div>
-
-<h2>怎么换算成"多少字"</h2>
-<div class="card">
-<ul style="margin:0;">
-<li>英文：1 token ≈ 0.75 个单词 → 128K ≈ 约 9.6 万词，1M ≈ 约 75 万词</li>
-<li>中文：1 个汉字 ≈ 1 个 token（不同分词器在 0.6–1.2 之间浮动）→ 1M ≈ 约 100 万汉字</li>
-</ul>
-</div>
-
-<h2>实操清单</h2>
-<div class="card">
-<ul style="margin:0;">
-<li><b>位置比数量重要。</b>关键指令放在输入的开头或结尾，别埋在中间。</li>
-<li><b>先检索，再提交。</b>大多数任务用 RAG 取相关片段，比整包塞进去更准也更便宜。</li>
-<li><b>历史要压缩，不要重发。</b>把稳定的对话前缀摘要化，只保留关键结论和约束。</li>
-<li><b>缓存稳定前缀。</b>系统提示、工具说明这类不变内容做前缀缓存，通常能省下大部分成本。</li>
-<li><b>盯住阈值。</b>留意厂商的长上下文加价门槛，别让 RAG 把请求静默推过高价档。</li>
-<li><b>为输出留空间。</b>窗口被输入占满时，回答会在半途被截断。</li>
-</ul>
-</div>
-
-<h2>自测</h2>
-<div class="q">
-<p><b>1.</b> 你和一个 128K 窗口的模型聊了很久，它突然开始重复你早就说过的话，还忘了开场定下的格式要求。发生了什么？</p>
-<details><summary>看解析</summary><p>上文累积逼近上限，最早的对话内容（包括开场立下的格式约定）被截断了。模型没有跨轮记忆，它只是"看不见"了那部分内容。解法是压缩历史或重述关键约束。</p></details>
-</div>
-
-<div class="q">
-<p><b>2.</b> 一份 30 万 token 的合同需要审阅。用 1M 窗口的模型整份丢进去，是最佳方案吗？</p>
-<details><summary>看解析</summary><p>不一定是。整份塞进去会命中长上下文加价档，且关键条款若落在输入中段，召回质量会下降。更好的做法是按条款切块检索，只把相关条款 + 你的审阅清单送进窗口。</p></details>
-</div>
-
-<div class="q">
-<p><b>3.</b> 把上下文窗口从 200K 换成 1M，模型的推理能力会提升吗？</p>
-<details><summary>看解析</summary><p>不会。窗口是容量指标，不是能力指标。它决定一次能读多少，不决定读得多好。换大窗口解决的是"放不下"，不是"想不明白"。</p></details>
-</div>
-
-<footer>
-概念学习卡片 · 生成于 2026-09-05 · 模型窗口与价格数据变动频繁，用于生产决策前请以厂商官方文档为准。
-</footer>
-
+<h2>可核查的资料来源链接</h2>
+<p><a href=" ">OpenAI官方文档‑上下文窗口介绍</a ></p >
 </div>
 </body>
 </html>
