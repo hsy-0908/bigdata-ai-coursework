@@ -71,3 +71,18 @@ git log --oneline       # 查看提交历史
 ---
 
 _持续更新中 · 2026 秋_
+
+## 作业1：概念学习资料生成项目
+### 仓库用途
+本仓库存放概念学习资料生成项目级 Skill，自动生成 AI 概念学习网页。
+
+### Skill 存放路径
+`.workbuddy/skills/concept-learning-generator/SKILL.md`
+
+### WorkBuddy 调用示例
+```
+@concept-learning-generator
+concept_name="Agent"
+```
+### 已产出学习资料
+Agent、大模型上下文窗口、Skill 三份 html
